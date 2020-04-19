@@ -4,6 +4,7 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  getRepository,
 } from 'typeorm';
 
 @Entity('categories')
@@ -19,6 +20,17 @@ class Category {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  static async findOrCreate(title: string): Promise<Category> {
+    const categoryRepository = getRepository(Category);
+
+    let category = await categoryRepository.findOne({ title });
+    if (category) return category;
+    category = new Category();
+    category.title = title;
+
+    return categoryRepository.save(category);
+  }
 }
 
 export default Category;
